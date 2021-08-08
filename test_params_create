@@ -1,4 +1,4 @@
-create State name="California" id="1"
+create State name="California"
 create State name="Arizona"
 all State
 
