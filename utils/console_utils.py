@@ -5,6 +5,7 @@ def get_classname(args):
     classname = split_args[0]
     return classname
 
+
 def get_key_values(args):
 
     key_val = args[:].split(' ')
@@ -14,7 +15,7 @@ def get_key_values(args):
 
     for s in key_val:
         key = s.split('=')[0].replace('"', '')
-        value:str = s.split('=')[1].replace('"', '').replace(' ', '_')
+        value: str = s.split('=')[1].replace('"', '').replace(' ', '_')
 
         if value.isnumeric():
             value = int(value)
