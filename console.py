@@ -2,7 +2,6 @@
 """ Console Module """
 import cmd
 import sys
-from utils.console_utils import get_classname, get_key_values
 from models.base_model import BaseModel
 from models.__init__ import storage
 from models.user import User
@@ -30,6 +29,30 @@ class HBNBCommand(cmd.Cmd):
         'max_guest': int, 'price_by_night': int,
         'latitude': float, 'longitude': float
     }
+
+    def get_classname(self, args):
+        split_args = args.split(' ')
+        classname = split_args[0]
+        return classname
+
+    def get_key_values(self, args):
+
+        key_val = args[:].split(' ')
+        del key_val[0]
+
+        data = {}
+
+        for s in key_val:
+            key = s.split('=')[0].replace('"', '')
+            value: str = s.split('=')[1].replace('"', '').replace(' ', '_')
+
+            if value.isnumeric():
+                value = int(value)
+
+            elif '.' in value:
+                value = float(value)
+            data.update({key: value})
+        return data
 
     def preloop(self):
         """Prints if isatty is false"""
@@ -120,13 +143,13 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
 
-        classname = get_classname(args)
+        classname = self.get_classname(args)
         if classname not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
 
         new_instance = HBNBCommand.classes[classname]()
-        data = get_key_values(args)
+        data = self.get_key_values(args)
 
         for key, value in data.items():
             setattr(new_instance, key, value)
