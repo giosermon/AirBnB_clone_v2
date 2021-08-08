@@ -30,30 +30,6 @@ class HBNBCommand(cmd.Cmd):
         'latitude': float, 'longitude': float
     }
 
-    def get_classname(self, args):
-        split_args = args.split(' ')
-        classname = split_args[0]
-        return classname
-
-    def get_key_values(self, args):
-
-        key_val = args[:].split(' ')
-        del key_val[0]
-
-        data = {}
-
-        for s in key_val:
-            key = s.split('=')[0].replace('"', '')
-            value: str = s.split('=')[1].replace('"', '').replace(' ', '_')
-
-            if value.isnumeric():
-                value = int(value)
-
-            elif '.' in value:
-                value = float(value)
-            data.update({key: value})
-        return data
-
     def preloop(self):
         """Prints if isatty is false"""
         if not sys.__stdin__.isatty():
@@ -61,7 +37,6 @@ class HBNBCommand(cmd.Cmd):
 
     def precmd(self, line):
         """Reformat command line for advanced command syntax.
-
         Usage: <class name>.<command>([<id> [<*args> or <**kwargs>]])
         (Brackets denote optional fields in usage example.)
         """
@@ -97,7 +72,7 @@ class HBNBCommand(cmd.Cmd):
                 pline = pline[2].strip()  # pline is now str
                 if pline:
                     # check for *args or **kwargs
-                    if pline[0] == '{' and pline[-1] == '}'\
+                    if pline[0] is '{' and pline[-1] is '}'\
                             and type(eval(pline)) is dict:
                         _args = pline
                     else:
@@ -137,22 +112,40 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
+    def parse_value(self, value):
+        if value[0] == '"':  # string case
+            value = value[1:-1].replace('"', '\"')
+            return value.replace('_', ' ')
+
+        if value.isdigit():  # int case
+            return int(value)
+
+        try:  # case float.
+            return float(value)
+        except:
+            return value
+
+    def parse_args(self, args):
+        data = {}
+        for pair in args[1:]:
+            pair = pair.split('=')
+            key = pair[0]
+            value = pair[1]
+            data.update({key: self.parse_value(value)})
+        return data
+
     def do_create(self, args):
         """ Create an object of any class"""
         if not args:
             print("** class name missing **")
             return
-
-        classname = self.get_classname(args)
-        if classname not in HBNBCommand.classes:
+        args = args.split(' ')
+        if args[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-
-        new_instance = HBNBCommand.classes[classname]()
-        data = self.get_key_values(args)
-
-        for key, value in data.items():
-            setattr(new_instance, key, value)
+        new_instance = HBNBCommand.classes[args[0]]()
+        data = self.parse_args(args)
+        print(data)
         storage.save()
         print(new_instance.id)
         storage.save()
@@ -303,7 +296,7 @@ class HBNBCommand(cmd.Cmd):
                 args.append(v)
         else:  # isolate args
             args = args[2]
-            if args and args[0] == '\"':  # check for quoted arg
+            if args and args[0] is '\"':  # check for quoted arg
                 second_quote = args.find('\"', 1)
                 att_name = args[1:second_quote]
                 args = args[second_quote + 1:]
@@ -311,10 +304,10 @@ class HBNBCommand(cmd.Cmd):
             args = args.partition(' ')
 
             # if att_name was not quoted arg
-            if not att_name and args[0] != ' ':
+            if not att_name and args[0] is not ' ':
                 att_name = args[0]
             # check for quoted val arg
-            if args[2] and args[2][0] == '\"':
+            if args[2] and args[2][0] is '\"':
                 att_val = args[2][1:args[2].find('\"', 1)]
 
             # if att_val was not quoted arg
