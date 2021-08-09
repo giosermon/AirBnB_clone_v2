@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """ Console Module """
 import cmd
+from os import getenv
 import sys
 from models.base_model import BaseModel
 from models.__init__ import storage
@@ -147,7 +148,12 @@ class HBNBCommand(cmd.Cmd):
         data = self.parse_args(args)
         for key, value in data.items():
             setattr(new_instance, key, value)
-        storage.save()
+
+        if getenv("HBNB_TYPE_STORAGE") == "db":
+            storage.new(new_instance)
+            storage.save()
+        else:
+            new_instance.save()
         print(new_instance.id)
 
     def help_create(self):
@@ -230,11 +236,11 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage._FileStorage__objects.items():
+            for k, v in storage.all().items():
                 if k.split('.')[0] == args:
                     print_list.append(str(v))
         else:
-            for k, v in storage._FileStorage__objects.items():
+            for k, v in storage.all():
                 print_list.append(str(v))
 
         print(print_list)
