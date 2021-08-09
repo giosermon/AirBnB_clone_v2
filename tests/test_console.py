@@ -8,6 +8,7 @@ Usage:
 import unittest
 import os
 
+
 class TestConsole(unittest.TestCase):
     ''' TestCase class for storing the unittests of the console. '''
 
