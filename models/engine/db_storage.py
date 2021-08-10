@@ -25,8 +25,6 @@ class DBStorage():
         DBStorage.__engine = create_engine(uri.format(
             mysql_user, mysql_password, mysql_host, mysql_db), pool_pre_ping=True)
 
-        DBStorage.__session = sessionmaker()()
-
     def all_cls_to_dict(self, cls=None):
         """objects to dict"""
 
