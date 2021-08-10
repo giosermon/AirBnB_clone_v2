@@ -22,12 +22,8 @@ class State(BaseModel, Base):
             """returns the list of City instances with state_id"""
             from models import storage
             from models.city import City
-            objDict = storage.all(City)
-            citiesList = []
-            for key, value in objDict.items():
-                if value.state_id == self.id:
-                    citiesList.append(value)
-            return (citiesList)
+            items = storage.all(City).items()
+            return [obj for _, obj in items if obj.state_id == self.id]
 
         @property
         def cities(self):
@@ -36,5 +32,3 @@ class State(BaseModel, Base):
             result = []
             for city in storage.all(City):
                 result.append(city)
-
-            
