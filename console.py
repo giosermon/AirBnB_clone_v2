@@ -353,4 +353,7 @@ class HBNBCommand(cmd.Cmd):
 
 
 if __name__ == "__main__":
+    from models import storage
+    print(storage.all(State))
+    
     HBNBCommand().cmdloop()

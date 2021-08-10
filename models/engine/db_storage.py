@@ -32,9 +32,7 @@ class DBStorage():
     def all_cls_to_dict(self, cls=None):
         """objects to dict"""
 
-        if not filter:
-            query = self.__session.query(cls).all()
-
+        query = self.__session.query(cls).all()
         return self.list_to_dict(query, cls)
 
     def list_to_dict(self, list, cls):
