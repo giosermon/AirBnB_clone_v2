@@ -15,6 +15,7 @@ class DBStorage():
     __session = None
 
     def __init__(self):
+        """ storage constructor perform connection"""
         uri = 'mysql+mysqldb://{}:{}@{}/{}'
         mysql_user = getenv("HBNB_MYSQL_USER")
         mysql_password = getenv("HBNB_MYSQL_PWD")
@@ -26,12 +27,20 @@ class DBStorage():
 
         DBStorage.__session = sessionmaker()()
 
-    def all_cls_to_dict(self, cls):
+    def all_cls_to_dict(self, cls=None):
+        """objects to dict"""
+
+        if not filter:
+            query = self.__session.query(cls).all()
+
+        return self.list_to_dict(query, cls)
+
+    def list_to_dict(self, list, cls):
         dict_info = {}
-        for row in self.__session.query(cls).all():
+        for row in list:
             key = "{}.{}".format(cls.__name__, row.id)
             dict_info.update({key: row})
-        return dict_info
+        return
 
     def all(self, cls=None):
         '''get all of cls'''
@@ -43,6 +52,10 @@ class DBStorage():
             for class_name in CLASS_LIST:
                 dict_info.update(self.all_cls_to_dict(class_name))
         return dict_info
+
+    def by_id(self, cls):
+        query = self.__session.query(cls).filter(cls["id"]).all()
+        return self.list_to_dict(query)
 
     def new(self, obj):
         '''add new element'''
