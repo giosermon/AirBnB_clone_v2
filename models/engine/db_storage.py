@@ -1,6 +1,7 @@
 ''' storage db mysql manager
 '''
 
+from models.base_model import Base
 from models.city import City
 from models.state import State
 from os import getenv
@@ -24,6 +25,9 @@ class DBStorage():
 
         DBStorage.__engine = create_engine(uri.format(
             mysql_user, mysql_password, mysql_host, mysql_db), pool_pre_ping=True)
+        
+        if getenv("HBNB_ENV") == "test":
+            Base.metadata.drop_all(self.__engine)
 
     def all_cls_to_dict(self, cls=None):
         """objects to dict"""
