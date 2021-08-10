@@ -1,6 +1,7 @@
 ''' storage db mysql manager
 '''
 
+from models.place import Place
 from models.user import User
 from models.base_model import Base
 from models.city import City
@@ -9,7 +10,7 @@ from os import getenv
 from sqlalchemy.engine import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-CLASS_LIST = [State, City, User]
+CLASS_LIST = [State, City, User, Place]
 
 
 class DBStorage():

@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 """ City Module for HBNB project """
 from os import getenv
+
+from sqlalchemy.orm import relationship
 from models.state import State
 from sqlalchemy.sql.expression import null
 from sqlalchemy.sql.schema import Column, ForeignKey
@@ -15,6 +17,8 @@ class City(BaseModel, Base):
     if getenv("HBNB_TYPE_STORAGE") == "db":
         name = Column(String(128), nullable=False)
         state_id = Column(String(60), ForeignKey(State.id), nullable=False)
+        places = relationship(
+            "Place", cascade="all, delete-orphan", backref='cities')
     else:
         place_id = ""
         user_id = ""
