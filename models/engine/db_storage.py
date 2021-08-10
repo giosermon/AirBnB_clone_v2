@@ -25,13 +25,12 @@ class DBStorage():
 
         DBStorage.__engine = create_engine(uri.format(
             mysql_user, mysql_password, mysql_host, mysql_db), pool_pre_ping=True)
-        
+
         if getenv("HBNB_ENV") == "test":
             Base.metadata.drop_all(self.__engine)
 
-    def all_cls_to_dict(self, cls=None):
+    def all_cls_to_dict(self, cls):
         """objects to dict"""
-
         query = self.__session.query(cls).all()
         return self.list_to_dict(query, cls)
 
@@ -40,7 +39,7 @@ class DBStorage():
         for row in list:
             key = "{}.{}".format(cls.__name__, row.id)
             dict_info.update({key: row})
-        return
+        return dict_info
 
     def all(self, cls=None):
         '''get all of cls'''
@@ -48,9 +47,9 @@ class DBStorage():
         if cls:
             return self.all_cls_to_dict(cls)
         dict_info = {}
-        if not cls:
-            for class_name in CLASS_LIST:
-                dict_info.update(self.all_cls_to_dict(class_name))
+
+        for class_name in CLASS_LIST:
+            dict_info.update(self.all_cls_to_dict(class_name))
         return dict_info
 
     def by_id(self, cls):
