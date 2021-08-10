@@ -1,6 +1,7 @@
 ''' storage db mysql manager
 '''
 
+from models.user import User
 from models.base_model import Base
 from models.city import City
 from models.state import State
@@ -8,7 +9,7 @@ from os import getenv
 from sqlalchemy.engine import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-CLASS_LIST = [State, City]
+CLASS_LIST = [State, City, User]
 
 
 class DBStorage():
@@ -72,8 +73,6 @@ class DBStorage():
     def reload(self):
         '''recreate model'''
         from models.base_model import Base
-        from models.state import State
-        from models.city import City
         Base.metadata.create_all(self.__engine)
         session_factory = sessionmaker(
             bind=self.__engine, expire_on_commit=False)
