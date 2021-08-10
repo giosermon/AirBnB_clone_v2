@@ -24,4 +24,8 @@ class State(BaseModel, Base):
             from models import storage
             from models.city import City
             items = storage.all(City).items()
-            return [obj for _, obj in items if obj.state_id == self.id]
+            result = []
+            for key, value in items:
+                if value.state_id == self.id:
+                    result.append(value)
+            return (result)
