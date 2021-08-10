@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """ City Module for HBNB project """
+from models.state import State
 from sqlalchemy.sql.expression import null
 from sqlalchemy.sql.schema import Column, ForeignKey
 from sqlalchemy.sql.sqltypes import Integer, String
@@ -11,4 +12,4 @@ class City(BaseModel, Base):
     __tablename__ = 'cities'
 
     name = Column(String(128), nullable=False)
-    # state_id = Column(String, ForeignKey("States.id"), nullable=False)
+    state_id = Column(String(60), ForeignKey(State.id))

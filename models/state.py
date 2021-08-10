@@ -13,6 +13,7 @@ class State(BaseModel, Base):
 
     if getenv("HBNB_TYPE_STORAGE") == "db":
         name = Column(String(128), nullable=False)
+        cities = relationship("City")
     else:
         name = ""
 
@@ -20,6 +21,3 @@ class State(BaseModel, Base):
         def cities(self):
             """return all cities"""
             pass
-
-
-    
