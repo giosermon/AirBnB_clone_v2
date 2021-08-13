@@ -45,5 +45,20 @@ class Place(BaseModel, Base):
         latitude = 0.0
         longitude = 0.0
         amenity_ids = []
-        
 
+        @property
+        def amenities(self):
+            from models import storage
+            from models.amenity import Amenity
+            filtered = []
+
+            for _, amenity in storage.all(Amenity).items():
+                if self.id == amenity:
+                    filtered.append(amenity)
+            return filtered
+
+        @amenities.setter
+        def amenities(self, amenity):
+            '''amenities setter'''
+            from models import storage
+            storage.new(amenity)
