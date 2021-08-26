@@ -18,5 +18,8 @@ def do_pack():
     date_format = current_time.strftime(DATE_FORMAT)
     filename = "web_static_{}.tgz".format(date_format)
     # compress
-    local("tar -cvzf {} /data/web_static/".format(filename))
-    return filename
+    try:
+        local("tar -cvzf {} /data/web_static/".format(filename))
+        return filename
+    except:
+        return None
