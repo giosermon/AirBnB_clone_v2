@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # set new release in /data
 # Install nginx
-apt-get update /dev/null
+apt-get update
 apt-get install nginx -y
 
 # set nginx config
