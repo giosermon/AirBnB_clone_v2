@@ -15,11 +15,10 @@ def do_pack():
     if not path.exists(VERSION_PATH):
         local(MKDIR_FOLDER.format(VERSION_PATH))
 
-    current_time = datetime.now()
-    date_format = current_time.strftime(DATE_FORMAT)
-    filename = "web_static_{}.tgz".format(date_format)
+    current_time = datetime.now().strftime(DATE_FORMAT)
+    filename = "web_static_{}.tgz".format(current_time)
     try:
-        local("tar -cvzf {}/{} /data/web_static/".format(VERSION_PATH, filename))
+        local("tar -cvzf {}/{} web_static".format(VERSION_PATH, filename))
         return filename
     except Exception:
         return None
