@@ -15,8 +15,8 @@ mkdir -p /data/web_static/releases/test/
 mkdir -p /data/web_static/shared/
 mkdir -p /data/web_static/current
 # Load html content
-echo "Fake content" > /data/web_static/releases/test/index.html
+echo "Fake content" >/data/web_static/releases/test/index.html
 ln -sfn /data/web_static/releases/test/ /data/web_static/current
-chown ubuntu /data
+chown -R ubuntu /data
 
 service nginx restart
