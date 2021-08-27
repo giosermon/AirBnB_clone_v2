@@ -1,85 +1,78 @@
 # Configure a nginx server with header
-exec {'execc_0':
-  command => 'apt-get update -y',
-  path    => '/usr/bin/'
+exec { 'exec_0':
+  command => 'sudo sudo apt-get update -y',
+  path    => ['/usr/bin', '/bin'],
+  returns => [0,1]
 }
 
-group { 'execc_1':
-  ensure => 'present'
+exec { 'exec_1':
+  require => Exec['exec_0'],
+  command => 'sudo apt-get install nginx -y',
+  path    => ['/usr/bin', '/bin'],
+  returns => [0,1]
 }
 
-user { 'execc_2':
-  ensure  => 'present',
-  groups  => 'ubuntu',
-  require => Group['ubuntu']
+exec { 'exec_2':
+  require => Exec['exec_1'],
+  command => 'sudo mkdir -p /data/web_static/shared/',
+  path    => ['/usr/bin', '/bin'],
+  returns => [0,1]
 }
 
-file{'execc_3':
-  ensure  => 'directory',
-  owner   => 'ubuntu',
-  group   => 'ubuntu',
-  require => User['ubuntu']
+exec { 'exec_3':
+  require => Exec['exec_2'],
+  command => 'sudo mkdir -p /data/web_static/releases/test/',
+  path    => ['/usr/bin', '/bin'],
+  returns => [0,1]
 }
 
-file{'execc_4':
-  ensure => 'directory',
-  owner  => 'ubuntu',
-  group  => 'ubuntu',
-  require => User['ubuntu']
+exec { 'exec_4':
+  require => Exec['exec_3'],
+  command => 'sudo touch /data/web_static/releases/test/index.html',
+  path    => ['/usr/bin', '/bin'],
+  returns => [0,1]
 }
 
-file{'execc_5':
-  ensure => 'directory',
-  owner  => 'ubuntu',
-  group  => 'ubuntu',
-  require => User['ubuntu']
+exec { 'exec_5':
+  require => Exec['exec_4'],
+  command => 'echo "Holberton School" | sudo tee /data/web_static/releases/test/index.html >/dev/null',
+  path    => ['/usr/bin', '/bin'],
+  returns => [0,1]
 }
 
-file{'execc_6':
-  ensure => 'directory',
-  owner  => 'ubuntu',
-  group  => 'ubuntu',
-  require => User['ubuntu']
+exec { 'exec_6':
+  require => Exec['exec_5'],
+  command => 'rm -rf /data/web_static/current',
+  path    => ['/usr/bin', '/bin', '/usr/sbin'],
+  returns => [0,1]
 }
 
-file{'execc_7':
-  ensure => 'directory',
-  owner  => 'ubuntu',
-  group  => 'ubuntu',
-  require => User['ubuntu']
+
+exec { 'exec_7':
+  require => Exec['exec_6'],
+  command => 'sudo ln -sf /data/web_static/releases/test/ /data/web_static/current',
+  path    => ['/usr/bin', '/bin', '/usr/sbin'],
+  returns => [0,1]
 }
 
-file{'execc_8':
-  ensure  => 'link',
-  target  => '/data/web_static/releases/test',
-  require => File['/data/web_static/releases/test']
+exec { 'exec_8':
+  require => Exec['exec_7'],
+  command => 'sudo chown -R ubuntu:ubuntu /data/',
+  path    => ['/usr/bin', '/bin', '/usr/sbin'],
+  returns => [0,1]
 }
 
-exec{'execc_9':
-  command => '/usr/bin/wget -q https://raw.githubusercontent.com/dario-castano/AirBnB_clone_v2/master/fake.html -O /data/web_static/releases/test/index.html',
-  require => File['/data/web_static/releases/test']
+exec { 'exec_9':
+  require     => Exec['exec_8'],
+  environment => ['C=\\tlocation /hbnb_static/ {\n\t\talias /data/web_static/current/;\n\t\tautoindex off;\n\t}\n'],
+  command     => 'sudo sed -i "38i $C" /etc/nginx/sites-available/default',
+  path        => ['/usr/bin', '/bin'],
+  returns     => [0,1]
 }
 
-package{'nginx':
-  ensure   => 'installed',
-  name     => 'nginx',
-  provider => 'apt',
-  require => Exec['apt_update']
-}
-
-exec{'download_conf':
-  command => '/usr/bin/wget -q https://raw.githubusercontent.com/dario-castano/AirBnB_clone_v2/master/default.txt -O /etc/nginx/sites-available/default',
-  require => Package['nginx']
-}
-
-service{'nginx_service':
-  ensure  => 'running',
-  name    => 'nginx',
-  enable  => 'true',
-  require => [Package['nginx'], Exec['download_conf']]
-}
-
-file{'/etc/nginx/sites-available/default':
-  notify  => Service['nginx_service'],
-  require => Package['nginx']
+exec { 'exec_10':
+  require => Exec['exec_9'],
+  command => 'sudo service nginx restart',
+  path    => ['/usr/bin', '/bin', '/usr/sbin'],
+  returns => [0,1]
 }
