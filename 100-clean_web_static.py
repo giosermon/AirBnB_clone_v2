@@ -1,18 +1,14 @@
 #!/usr/bin/python3
 """
- Fabric script (based on the file 1-pack_web_static.py)
- that distributes an archive to your web servers,
- using the function do_deploy:
+Deploys the tar which has the static codebase
 """
-
-
-from datetime import datetime
+import re
 import os
-from fabric.api import run, put, env
+from fabric.api import *
+from datetime import datetime
 
 env.use_ssh_config = True
 env.hosts = ['ubuntu@34.139.216.89', 'ubuntu@54.159.25.183']
-
 
 
 def do_pack():
@@ -25,7 +21,7 @@ def do_pack():
     local("tar -zcvf '{}' web_static".format(filename))
 
     if os.path.exists(filename):
-        return outpath
+        return filename
     else:
         return None
 
@@ -33,11 +29,10 @@ def do_pack():
 def do_deploy(archive_path):
     """Deploys to the nodes
     """
-    if os.path.exists(archive_path):
+    if os.path.isfile(archive_path):
         tar_name = re.search('web_static_[0-9]*.tgz', archive_path).group(0)
         untar_path = "/data/web_static/releases/{}"\
             .format(tar_name.replace('.tgz', ''))
-
         put(archive_path, '/tmp')
         run("mkdir -p {}".format(untar_path))
         run("tar -zxf /tmp/{} -C {}".format(tar_name, untar_path))
@@ -50,3 +45,26 @@ def do_deploy(archive_path):
         return True
     else:
         return False
+
+
+def deploy():
+    """Runs full deployment
+    """
+    pack = do_pack()
+    dep = do_deploy(pack)
+    return dep
+
+
+def do_clean(number=0):
+    """Cleans old deployment files
+    """
+    number = int(number)
+    local_path = './versions/'
+    remote_path = '/data/web_static/releases/'
+
+    if number >= 0:
+        number = 1 if number == 0 else number
+        local('for i in `ls -1t {} | tail -n +{}`; do rm -f {}$i ; done'
+              .format(local_path, number + 1, local_path))
+        run('for i in `ls -1t {} | tail -n +{}`; do rm -rf {}$i ; done'
+            .format(remote_path, number + 1, remote_path))
